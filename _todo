@@ -1,0 +1,24 @@
+- mock data generation
+    - [done] create a script to simulate air sensor result
+        - [done] create db_conn for reusability
+    - parameterize the script
+    - utilize makefile
+    - [done] setup docker compose for functional database (psql 16)
+- extract
+    - install cdc using debezium
+    - install kafka
+- load
+    - install duckdb as data warehouse
+    - create staging schema, mirroring the functional database
+    - connect kafka to duckdb
+    - store data
+- transform
+    - create final schema
+    - design based on kimbell's data warehouse
+    - install dbt
+    - transform data in staging area to final
+- dashboard
+    - install grafana
+    - connect grafana to the data warehouse (final schema), show real-time monitoring
+    - install superset
+    - connect superset to the data warehouse, show analytical reports
