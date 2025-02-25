@@ -48,7 +48,7 @@ services:
     environment:
       BOOTSTRAP_SERVERS: kafka:29092
       CONNECT_REST_ADVERTISED_HOST_NAME: debezium
-      GROUP_ID: 1
+      GROUP_ID: debezium-group
       CONFIG_STORAGE_TOPIC: connect_configs
       STATUS_STORAGE_TOPIC: connect_statuses
       OFFSET_STORAGE_TOPIC: connect_offsets
@@ -56,12 +56,11 @@ services:
       VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       ENABLE_DEBEZIUM_SCRIPTING: 'true'
     healthcheck:
-      test:
-        [ 'CMD', 'curl', '--silent', '--fail', '-X', 'GET', 'http://localhost:8083/connectors', ]
-      start_period: 10s
+      test: [ "CMD", "curl", "--silent", "--fail", "-X", "GET", "http://localhost:8083/connectors" ]
+      start_period: 20s
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     networks:
       - air_sensor_net
 
@@ -106,6 +105,21 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:29092
+    networks:
+      - air_sensor_net
+
+  duckdb:
+    build:
+      context: ./duckdb_data
+      dockerfile: Dockerfile
+    container_name: duckdb
+    hostname: duckdb
+    volumes:
+      - ./duckdb_data:/data
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: [ "tail", "-f", "/dev/null" ]
     networks:
       - air_sensor_net
 
